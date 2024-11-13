@@ -8,6 +8,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -15,13 +16,11 @@ import java.util.List;
 public class BookController {
 
     @Autowired
-    BookService bookService;
-    @Autowired
-    private BookRepository bookRepository;
+    private BookService bookService;  // استدعاء الخدمة بدلاً من repository
 
     @GetMapping
     public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+        return bookService.getAllBooks();  // استدعاء الخدمة للحصول على الكتب
     }
 
     @GetMapping("/{id}")
@@ -37,29 +36,44 @@ public class BookController {
             response.setMessage("User details retrieved successfully");
             response.setData(book);
             return response;
-
         }
-
     }
 
     @PostMapping
-    public Book addBook(@RequestBody Book book) {
-        return bookRepository.save(book);
+    public Book addBook(@Valid @RequestBody Book book) {
+        return bookService.addBook(book);  // استدعاء الخدمة لإضافة الكتاب
     }
 
     @PutMapping("/{id}")
-    public Book updateBook(@PathVariable Long id, @RequestBody Book bookDetails) {
-        Book book = bookRepository.findById(id).orElseThrow(() -> new RuntimeException("Book not found"));
-        book.setTitle(bookDetails.getTitle());
-        book.setAuthor(bookDetails.getAuthor());
-        book.setPublicationYear(bookDetails.getPublicationYear());
-        book.setIsbn(bookDetails.getIsbn());
-        return bookRepository.save(book);
+    public Response updateBook(@PathVariable Long id, @Valid @RequestBody Book bookDetails) {
+        // العثور على الكتاب بناءً على المعرف
+        Book existingBook = bookService.getBook(id);
+
+        // إذا لم يتم العثور على الكتاب
+        if (existingBook == null) {
+            return Response.error(404, "Book not found");
+        }
+
+        // تحديث بيانات الكتاب
+        existingBook.setTitle(bookDetails.getTitle());
+        existingBook.setAuthor(bookDetails.getAuthor());
+        existingBook.setPublicationYear(bookDetails.getPublicationYear());
+        existingBook.setIsbn(bookDetails.getIsbn());
+
+        // حفظ الكتاب المعدل في قاعدة البيانات
+        Book updatedBook = bookService.updateBook(existingBook);
+
+        // إرجاع الاستجابة مع الكتاب المعدل
+        Response<Book> response = new Response<>();
+        response.setResultCode(200);
+        response.setResultDescription("Success");
+        response.setMessage("Book updated successfully");
+        response.setData(updatedBook);
+        return response;
     }
 
     @DeleteMapping("/{id}")
     public void deleteBook(@PathVariable Long id) {
-        bookRepository.deleteById(id);
+        bookService.deleteBook(id);  // استدعاء الخدمة لحذف الكتاب
     }
 }
-

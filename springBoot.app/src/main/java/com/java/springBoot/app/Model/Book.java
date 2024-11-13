@@ -1,8 +1,14 @@
 package com.java.springBoot.app.Model;
 
+
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+
 
 @Entity
 @Table(name = "Book")
@@ -14,14 +20,21 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank(message = "Title is required") // تحقق أن العنوان ليس فارغًا
     @Column(name = "title")
     private String title;
+
+    @NotBlank(message = "Author is required") // تحقق أن المؤلف ليس فارغًا
     @Column(name = "author")
     private String author;
+
+    @Min(value = 1000, message = "Publication year must be a valid year") // تحقق أن السنة صحيحة
+    @Max(value = 2024, message = "Publication year cannot be in the future") // تحقق أن السنة لا تكون في المستقبل
     @Column(name = "publicationYear")
     private int publicationYear;
+
+    @Pattern(regexp = "\\d{3}-\\d{10}", message = "ISBN format should be 000-0000000000") // تحقق من تنسيق الـ ISBN
     @Column(name = "isbn")
     private String isbn;
-
-
 }
