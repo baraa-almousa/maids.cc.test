@@ -17,18 +17,28 @@ public class BookService {
         return bookRepository.findAll();  // استخدام BookRepository للحصول على جميع الكتب
     }
     public Book getBook(Long id) {
-        Book book = null;
-        book = bookRepository.findById(id).get();
+        Book book = bookRepository.findById(id).orElse(null);
         return book;
     }
+
 
     public Book addBook(Book book) {
         return bookRepository.save(book);
     }
 
     public void deleteBook(Long id) {
+        // Ensure the book exists before attempting to delete
+        if (!bookRepository.existsById(id)) {
+            throw new NoDataFoundException("Book with ID " + id + " not found");
+        }
         bookRepository.deleteById(id);
     }
+
+
+    public Book findById(Long id) {
+        return bookRepository.findById(id).orElse(null);
+    }
+
     public Book updateBook(Book book) {
         return bookRepository.save(book);  // حفظ الكتاب المعدل في قاعدة البيانات
     }

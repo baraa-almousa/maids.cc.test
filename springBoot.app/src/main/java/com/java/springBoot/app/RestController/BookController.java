@@ -1,15 +1,19 @@
 package com.java.springBoot.app.RestController;
 
 import com.java.springBoot.app.Class.Response;
+import com.java.springBoot.app.Exception.NoDataFoundException;
 import com.java.springBoot.app.Model.Book;
 import com.java.springBoot.app.Repository.BookRepository;
 import com.java.springBoot.app.Service.BookService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/books")
@@ -27,17 +31,17 @@ public class BookController {
     public Response getBookById(@PathVariable Long id) {
         Book book = bookService.getBook(id);
         if (book == null) {
-            return Response.error(404, "book not found");
-        }
-        else {
-            Response<Book> response = new Response<Book>();
+            return Response.error(404, "Book not found");
+        } else {
+            Response<Book> response = new Response<>();
             response.setResultCode(200);
             response.setResultDescription("Success");
-            response.setMessage("User details retrieved successfully");
+            response.setMessage("Book details retrieved successfully");
             response.setData(book);
             return response;
         }
     }
+
 
     @PostMapping
     public Book addBook(@Valid @RequestBody Book book) {
@@ -73,7 +77,31 @@ public class BookController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBook(@PathVariable Long id) {
-        bookService.deleteBook(id);  // استدعاء الخدمة لحذف الكتاب
+    public ResponseEntity<Response<Void>> deleteBook(@PathVariable Long id) {
+        try {
+            Book book = bookService.findById(id);
+
+            if (book == null) {
+                // Return 404 if the book is not found
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Response.error(404, "Error deleting the book not found"));
+            }
+
+            bookService.deleteBook(id);  // Proceed with deletion
+
+            // Return 200 if the deletion was successful with no data
+            return ResponseEntity.ok(Response.success());  // Use the method with no data
+
+        } catch (NoDataFoundException e) {
+            // In case book was not found, catch the exception and return 404
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Response.error(404, e.getMessage()));
+        } catch (Exception e) {
+            // Return 500 in case of any other error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Response.error(500, "Error deleting book"));
+        }
     }
+
+
 }

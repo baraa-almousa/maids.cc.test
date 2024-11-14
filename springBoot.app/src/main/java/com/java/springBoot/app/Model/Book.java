@@ -1,6 +1,7 @@
 package com.java.springBoot.app.Model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.util.List;
 
 
 @Entity
@@ -37,4 +39,10 @@ public class Book {
     @Pattern(regexp = "\\d{3}-\\d{10}", message = "ISBN format should be 000-0000000000") // تحقق من تنسيق الـ ISBN
     @Column(name = "isbn")
     private String isbn;
+
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private List<BorrowingRecord> borrowingRecords;
+
 }
