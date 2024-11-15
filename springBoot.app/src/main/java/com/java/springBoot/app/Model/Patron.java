@@ -23,10 +23,12 @@ public class Patron {
     @Column(name = "PhoneNumber")
     private String PhoneNumber;
 
+    public Patron(Long id, String name , String email, String phoneNumber) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        PhoneNumber = phoneNumber;
+    }
 
-
-
-
-    // Getters and Setters
 }
 
