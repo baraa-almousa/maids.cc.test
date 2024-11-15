@@ -19,10 +19,10 @@ public class Response <T>  {
 	 private int resultCode;
      private String resultDescription;
      private String message;
-     @JsonInclude(JsonInclude.Include.NON_NULL) // Include only if not null
+     @JsonInclude(JsonInclude.Include.NON_NULL)
   	 @JsonProperty("data")
      private T data;
-     @JsonInclude(JsonInclude.Include.NON_NULL) // Include only if not null
+     @JsonInclude(JsonInclude.Include.NON_NULL)
  	 @JsonProperty("list")
      private List<T> dataList;
 
@@ -35,7 +35,6 @@ public class Response <T>  {
 		return response;
 	}
 
-		// Regular success method for generic data
 		public static <T> Response<T> success(T data) {
 			Response<T> response = new Response<>();
 			response.setResultCode(200);
@@ -45,7 +44,6 @@ public class Response <T>  {
 			return response;
 		}
 
-		// Overloaded method for success when no data is returned (Void)
 		public static Response<Void> success() {
 			Response<Void> response = new Response<>();
 			response.setResultCode(200);

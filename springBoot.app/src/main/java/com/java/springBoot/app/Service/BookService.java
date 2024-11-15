@@ -15,7 +15,7 @@ public class BookService {
     private BookRepository bookRepository;
 
     public List<Book> getAllBooks() {
-        return bookRepository.findAll();  // استخدام BookRepository للحصول على جميع الكتب
+        return bookRepository.findAll();
     }
     public Book getBook(Long id) {
         Book book = bookRepository.findById(id).orElse(null);
@@ -28,7 +28,6 @@ public class BookService {
     }
     @Transactional
     public void deleteBook(Long id) {
-        // Ensure the book exists before attempting to delete
         if (!bookRepository.existsById(id)) {
             throw new NoDataFoundException("Book with ID " + id + " not found");
         }
@@ -42,7 +41,7 @@ public class BookService {
 
     @Transactional
     public Book updateBook(Book book) {
-        return bookRepository.save(book);  // حفظ الكتاب المعدل في قاعدة البيانات
+        return bookRepository.save(book);
     }
 
 

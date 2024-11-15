@@ -23,20 +23,20 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Title is required") // تحقق أن العنوان ليس فارغًا
+    @NotBlank(message = "Title is required")
     @Column(name = "title")
     private String title;
 
-    @NotBlank(message = "Author is required") // تحقق أن المؤلف ليس فارغًا
+    @NotBlank(message = "Author is required")
     @Column(name = "author")
     private String author;
 
-    @Min(value = 1000, message = "Publication year must be a valid year") // تحقق أن السنة صحيحة
-    @Max(value = 2024, message = "Publication year cannot be in the future") // تحقق أن السنة لا تكون في المستقبل
+    @Min(value = 1000, message = "Publication year must be a valid year")
+    @Max(value = 2024, message = "Publication year cannot be in the future")
     @Column(name = "publicationYear")
     private int publicationYear;
 
-    @Pattern(regexp = "\\d{3}-\\d{10}", message = "ISBN format should be 000-0000000000") // تحقق من تنسيق الـ ISBN
+    @Pattern(regexp = "\\d{3}-\\d{10}", message = "ISBN format should be 000-0000000000")
     @Column(name = "isbn")
     private String isbn;
 

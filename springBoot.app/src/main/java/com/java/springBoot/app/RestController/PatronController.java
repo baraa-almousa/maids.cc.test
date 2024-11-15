@@ -59,7 +59,6 @@ public class PatronController {
             return Response.error(404, "Patron not found");
         }
 
-        // Update Patron fields
         existingPatron.setName(patronDetails.getName());
         existingPatron.setContactInfo(patronDetails.getContactInfo());
         existingPatron.setEmail(patronDetails.getEmail());
@@ -67,10 +66,8 @@ public class PatronController {
         existingPatron.setContactInfo(patronDetails.getContactInfo());
 
 
-        // Save updated Patron in database
         Patron updatedPatron = patronService.updatePatron(existingPatron);
 
-        // Return response with updated Patron
         Response<Patron> response = new Response<>();
         response.setResultCode(200);
         response.setResultDescription("Success");

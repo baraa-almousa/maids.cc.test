@@ -21,13 +21,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/auth/**").permitAll() // السماح لجميع الطلبات على /api/auth/*
+                .antMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated();
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        // إضافة مستخدم ثابت هنا
+
         auth.inMemoryAuthentication()
                 .passwordEncoder(passwordEncoder())
                 .withUser("testuser")
