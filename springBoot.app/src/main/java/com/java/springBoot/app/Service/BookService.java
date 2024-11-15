@@ -6,6 +6,7 @@ import com.java.springBoot.app.Repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -21,11 +22,11 @@ public class BookService {
         return book;
     }
 
-
+    @Transactional
     public Book addBook(Book book) {
         return bookRepository.save(book);
     }
-
+    @Transactional
     public void deleteBook(Long id) {
         // Ensure the book exists before attempting to delete
         if (!bookRepository.existsById(id)) {
@@ -39,6 +40,7 @@ public class BookService {
         return bookRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     public Book updateBook(Book book) {
         return bookRepository.save(book);  // حفظ الكتاب المعدل في قاعدة البيانات
     }

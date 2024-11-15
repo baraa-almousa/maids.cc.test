@@ -10,6 +10,7 @@ import com.java.springBoot.app.Repository.PatronRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -29,6 +30,8 @@ public class BorrowingRecordService {
     public List<BorrowingRecord> getAllBorrowingRecords() {
         return borrowingRecordRepository.findAll();
     }
+
+    @Transactional
     public BorrowingRecord borrowBook(Long bookId, Long patronId) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new NoDataFoundException("Book not found"));
@@ -43,6 +46,7 @@ public class BorrowingRecordService {
         return borrowingRecordRepository.save(record);
     }
 
+    @Transactional
     public BorrowingRecord getBorrowBook(Long bookId, Long patronId) {
         BorrowingRecord record = borrowingRecordRepository
                 .findByBookIdAndPatronIdAndReturnDateIsNull(bookId, patronId)
