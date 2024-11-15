@@ -13,7 +13,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/api/books/**").permitAll() // Allow public access to the book endpoints
+                .antMatchers("/api/**").permitAll() // Allow public access to the book endpoints
                 .anyRequest().authenticated() // Restrict all other endpoints
                 .and()
                 .csrf().disable(); // Disable CSRF if testing locally

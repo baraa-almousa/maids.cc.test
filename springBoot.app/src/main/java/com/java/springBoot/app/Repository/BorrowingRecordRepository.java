@@ -11,4 +11,3 @@ public interface BorrowingRecordRepository extends JpaRepository<BorrowingRecord
     Optional<BorrowingRecord> findByBookIdAndPatronIdAndReturnDateIsNull(Long bookId, Long patronId);
 
 }
-

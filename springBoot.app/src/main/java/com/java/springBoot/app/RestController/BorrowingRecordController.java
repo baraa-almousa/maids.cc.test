@@ -1,50 +1,52 @@
 package com.java.springBoot.app.RestController;
 
-import com.java.springBoot.app.Model.Book;
+import com.java.springBoot.app.Class.Response;
 import com.java.springBoot.app.Model.BorrowingRecord;
-import com.java.springBoot.app.Model.Patron;
-import com.java.springBoot.app.Repository.BookRepository;
-import com.java.springBoot.app.Repository.BorrowingRecordRepository;
-import com.java.springBoot.app.Repository.PatronRepository;
+import com.java.springBoot.app.Service.BorrowingRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 public class BorrowingRecordController {
 
     @Autowired
-    private BookRepository bookRepository;
+    private BorrowingRecordService borrowingRecordService;
 
-    @Autowired
-    private PatronRepository patronRepository;
-
-    @Autowired
-    private BorrowingRecordRepository borrowingRecordRepository;
+    @GetMapping("/borrowingRecords")
+    public ResponseEntity<Response<List<BorrowingRecord>>> getAllBorrowingRecords() {
+        List<BorrowingRecord> records = borrowingRecordService.getAllBorrowingRecords();
+        return ResponseEntity.ok(Response.success(records));
+    }
 
     @PostMapping("/borrow/{bookId}/patron/{patronId}")
-    public BorrowingRecord borrowBook(@PathVariable Long bookId, @PathVariable Long patronId) {
-        Book book = bookRepository.findById(bookId).orElseThrow(() -> new RuntimeException("Book not found"));
-        Patron patron = patronRepository.findById(patronId).orElseThrow(() -> new RuntimeException("Patron not found"));
+    public ResponseEntity<Response<BorrowingRecord>> borrowBook(@PathVariable Long bookId, @PathVariable Long patronId) {
+        try {
+            BorrowingRecord record = borrowingRecordService.borrowBook(bookId, patronId);
 
-        BorrowingRecord record = new BorrowingRecord();
-        record.setBook(book);
-        record.setPatron(patron);
-        record.setBorrowDate(LocalDate.now());
+            Response<BorrowingRecord> response = Response.success(record);
+            response.setResultCode(201);
+            response.setMessage("Book borrowing created successfully");
 
-        return borrowingRecordRepository.save(record);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Response.error(404, e.getMessage()));
+        }
     }
 
-    @PutMapping("/return/{bookId}/patron/{patronId}")
-    public BorrowingRecord returnBook(@PathVariable Long bookId, @PathVariable Long patronId) {
-        BorrowingRecord record = borrowingRecordRepository.findByBookIdAndPatronIdAndReturnDateIsNull(bookId, patronId)
-                .orElseThrow(() -> new RuntimeException("Borrowing record not found"));
 
-        record.setReturnDate(LocalDate.now());
-
-        return borrowingRecordRepository.save(record);
+    @GetMapping("/return/book/{bookId}/patron/{patronId}")
+    public ResponseEntity<Response<BorrowingRecord>> getBorrowBook(@PathVariable Long bookId, @PathVariable Long patronId) {
+        try {
+            BorrowingRecord record = borrowingRecordService.getBorrowBook(bookId, patronId);
+            return ResponseEntity.ok(Response.success(record));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Response.error(404, e.getMessage()));
+        }
     }
 }
-

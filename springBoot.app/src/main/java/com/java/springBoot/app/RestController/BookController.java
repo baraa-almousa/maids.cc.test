@@ -42,11 +42,19 @@ public class BookController {
         }
     }
 
-
     @PostMapping
-    public Book addBook(@Valid @RequestBody Book book) {
-        return bookService.addBook(book);  // استدعاء الخدمة لإضافة الكتاب
+    public ResponseEntity<Response<Book>> addBook(@Valid @RequestBody Book book) {
+        Book savedBook = bookService.addBook(book);
+
+        Response<Book> response = Response.success(savedBook);
+        response.setResultCode(201);
+        response.setMessage("Book created successfully");
+
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+
 
     @PutMapping("/{id}")
     public Response updateBook(@PathVariable Long id, @Valid @RequestBody Book bookDetails) {
@@ -84,7 +92,7 @@ public class BookController {
             if (book == null) {
                 // Return 404 if the book is not found
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Response.error(404, "Error deleting the book not found"));
+                        .body(Response.error(404, "Error deleting Book not found"));
             }
 
             bookService.deleteBook(id);  // Proceed with deletion
